@@ -4,6 +4,22 @@ import { clearToken, getToken, saveToken } from "../services/session";
 
 const AuthContext = createContext(null);
 
+const logAuthError = (phase, error) => {
+  const payload = {
+    phase,
+    message: error?.message,
+    name: error?.name,
+    code: error?.code,
+    isAxiosError: error?.isAxiosError,
+    responseStatus: error?.response?.status,
+    responseHeaders: error?.response?.headers,
+    responseData: error?.response?.data,
+    requestUrl: error?.config?.url ? `${error?.config?.baseURL || ""}${error.config.url}` : undefined
+  };
+  console.error("[auth]", payload);
+  console.error("[auth] raw error:", error);
+};
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -30,14 +46,24 @@ export const AuthProvider = ({ children }) => {
       loading,
       isAuthenticated: Boolean(user),
       login: async (email, password) => {
-        const data = await loginApi({ email, password });
-        await saveToken(data.token);
-        setUser(data.user);
+        try {
+          const data = await loginApi({ email, password });
+          await saveToken(data.token);
+          setUser(data.user);
+        } catch (error) {
+          logAuthError("login", error);
+          throw error;
+        }
       },
       signup: async (name, email, password) => {
-        const data = await signupApi({ name, email, password });
-        await saveToken(data.token);
-        setUser(data.user);
+        try {
+          const data = await signupApi({ name, email, password });
+          await saveToken(data.token);
+          setUser(data.user);
+        } catch (error) {
+          logAuthError("signup", error);
+          throw error;
+        }
       },
       logout: async () => {
         await clearToken();

@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import { Text, TextInput, StyleSheet, TouchableOpacity, Alert, KeyboardAvoidingView, Platform } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import GlassCard from "../components/GlassCard";
 import GlassButton from "../components/GlassButton";
 import { useAuth } from "../context/AuthContext";
+import colors from "../constants/colors";
 
 export default function LoginScreen({ navigation }) {
   const { login } = useAuth();
@@ -24,43 +25,47 @@ export default function LoginScreen({ navigation }) {
 
   return (
     <LinearGradient colors={["#060915", "#101a31", "#121f39"]} style={styles.container}>
-      <GlassCard style={styles.card}>
-        <Text style={styles.title}>Welcome Back</Text>
-        <TextInput
-          placeholder="Email"
-          placeholderTextColor="#9BA7C7"
-          value={email}
-          autoCapitalize="none"
-          onChangeText={setEmail}
-          style={styles.input}
-        />
-        <TextInput
-          placeholder="Password"
-          placeholderTextColor="#9BA7C7"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-          style={styles.input}
-        />
-        <GlassButton title={loading ? "Signing in..." : "Login"} onPress={onLogin} />
-        <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
-          <Text style={styles.link}>New user? Create account</Text>
-        </TouchableOpacity>
-      </GlassCard>
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={styles.inner}>
+        <GlassCard style={styles.card}>
+          <Text style={styles.title}>Welcome Back</Text>
+          <TextInput
+            placeholder="Email"
+            placeholderTextColor={colors.subtext}
+            value={email}
+            autoCapitalize="none"
+            keyboardType="email-address"
+            onChangeText={setEmail}
+            style={styles.input}
+          />
+          <TextInput
+            placeholder="Password"
+            placeholderTextColor={colors.subtext}
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+            style={styles.input}
+          />
+          <GlassButton title={loading ? "Signing in..." : "Login"} onPress={onLogin} />
+          <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
+            <Text style={styles.link}>New user? Create account</Text>
+          </TouchableOpacity>
+        </GlassCard>
+      </KeyboardAvoidingView>
     </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: "center", padding: 18 },
+  inner: { flex: 1, justifyContent: "center" },
   card: { marginTop: 30 },
-  title: { color: "#F1F5FF", fontSize: 26, fontWeight: "800", marginBottom: 18 },
+  title: { color: colors.text, fontSize: 26, fontWeight: "800", marginBottom: 18 },
   input: {
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.15)",
     backgroundColor: "rgba(255,255,255,0.08)",
     borderRadius: 12,
-    color: "#fff",
+    color: colors.text,
     padding: 12,
     marginBottom: 12
   },

@@ -1,13 +1,17 @@
 import axios from "axios";
 import Constants from "expo-constants";
-import { Platform } from "react-native";
+import { DEV_MACHINE_LAN_API_BASE } from "../constants/apiBaseUrl";
 import { getToken } from "./session";
 
 const configuredUrl =
   process.env.EXPO_PUBLIC_API_BASE_URL || Constants?.expoConfig?.extra?.apiBaseUrl;
 
-const fallbackUrl = Platform.OS === "android" ? "http://10.0.2.2:5000" : "http://localhost:5000";
-const baseUrl = configuredUrl || fallbackUrl;
+const baseUrl = configuredUrl || DEV_MACHINE_LAN_API_BASE;
+
+if (__DEV__) {
+  console.log("[api] EXPO_PUBLIC_API_BASE_URL:", process.env.EXPO_PUBLIC_API_BASE_URL || "(not set)");
+  console.log("[api] resolved axios baseURL:", baseUrl);
+}
 
 const api = axios.create({
   baseURL: baseUrl,

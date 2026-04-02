@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: ogtps-backend
+    env: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: MONGODB_URI
+        sync: false
+      - key: ML_SERVICE_URL
+        sync: false
+      - key: PORT
+        value: 5000
